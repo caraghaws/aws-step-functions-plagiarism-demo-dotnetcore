@@ -95,6 +95,17 @@ Resources:
             Handler: ValidateExamTask::ValidateExamTask.Function::FunctionHandler
             Role: !Sub ${DynamoDBCrudRole.Arn}
 
+    SubmitExamFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            Description: DevelopingWithStepFunctions - Sends exam results back from Testing Centre.
+            CodeUri: ./SubmitExamTask/
+            Handler: SubmitExamTask::SubmitExamTask.Function::FunctionHandler
+            Role: !Sub ${DynamoDBCrudRole.Arn}
+            Environment:
+                Variables:
+                    STEP_FUNCTION_ARN: !Ref DevelopingWithStepFunctionsStateMachine            
+
 
    ###    ########  #### 
   ## ##   ##     ##  ##  
