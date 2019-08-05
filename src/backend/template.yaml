@@ -101,10 +101,16 @@ Resources:
             Description: DevelopingWithStepFunctions - Sends exam results back from Testing Centre.
             CodeUri: ./SubmitExamTask/
             Handler: SubmitExamTask::SubmitExamTask.Function::FunctionHandler
-            Role: !Sub ${DynamoDBCrudRole.Arn}
+            Role: !Sub ${StepFunctionInvocationRole.Arn}
             Environment:
                 Variables:
-                    STEP_FUNCTION_ARN: !Ref DevelopingWithStepFunctionsStateMachine            
+                    STEP_FUNCTION_ARN: !Ref DevelopingWithStepFunctionsStateMachine
+            Events:
+                HttpPost:
+                    Type: Api
+                    Properties:
+                        Path: /submitExam
+                        Method: post           
 
 
    ###    ########  #### 
@@ -413,6 +419,38 @@ Resources:
                                 Resource: 
                                 - !Sub ${IncidentsTable.Arn}
 
+    StepFunctionInvocationRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: !Join ["", ["/", !Ref "AWS::StackName", "/"]]
+            ManagedPolicyArns:
+                - "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+                - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Sid: "AllowLambdaServiceToAssumeRole"
+                        Effect: "Allow"
+                        Action: 
+                            - "sts:AssumeRole"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+            Policies:
+                -   PolicyName: "AllowStepFunctionInvocation"
+                    PolicyDocument:
+                        Version: '2012-10-17'
+                        Statement:
+                            - 
+                                Effect: "Allow"
+                                Action:
+                                - 'states:StartExecution'
+                                - 'states:UpdateStateMachine'
+                                - 'states:StopExecution'
+                                Resource: 
+                                - !Ref DevelopingWithStepFunctionsStateMachine
+
  ######  ##    ##  ######  
 ##    ## ###   ## ##    ## 
 ##       ####  ## ##       
@@ -460,3 +498,8 @@ Outputs:
     TakeAdministrativeActionFunctionArn:
         Description: Take Administrative Action Function ARN
         Value: !GetAtt TakeAdministrativeActionFunction.Arn
+
+    SubmitExamFunctionArn:
+        Description: Submit exam callback Function ARN
+        Value: !GetAtt SubmitExamFunction.Arn
+

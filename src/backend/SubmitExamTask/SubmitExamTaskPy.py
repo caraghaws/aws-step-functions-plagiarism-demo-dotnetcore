@@ -16,16 +16,10 @@ def lambda_handler(event, context):
     print('score: ', score)
     
     taskToken = event['tt']
-    print('taskToken: ', taskToken) 
-    
-    
-    
-    response = client.start_execution(
-        stateMachineArn='string',
-        name='string',
-        input='string'
-    )
-    
+    print('taskToken: ', taskToken)	
+	
+
+	
     response = client.send_task_success(
         taskToken=taskToken,
         output='string'
@@ -34,5 +28,5 @@ def lambda_handler(event, context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
+        'body': json.dumps(response)
     }
