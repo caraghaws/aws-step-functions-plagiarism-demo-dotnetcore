@@ -116,7 +116,7 @@
                 console.log(this.data);
 
                 // POST /someUrl
-                this.$http.post('https://[ADD YOUR API GATEWAY URL HERE]/incident', this.incidentData).then(response => {
+                this.$http.post('https://3dfazn6fd0.execute-api.ap-southeast-2.amazonaws.com/v1/incident', this.incidentData).then(response => {
                         // get status
                         console.log(response.body)
                         this.executionArn = response.body.executionArn;
